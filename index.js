@@ -20,6 +20,7 @@ var plugins = [
   { register: require('inert')},
   { register: require('./routes/static_pages.js')},
   { register: require('./routes/api/doughnuts.js')},
+  { register: require('./routes/api/users.js')},
   { register: require('hapi-mongodb'),
     options: {
       "url": process.env.MONGOLAB_URI || "mongodb://127.0.0.1:27017/hapi-doughnuts",

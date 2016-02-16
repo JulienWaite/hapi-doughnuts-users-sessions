@@ -1,5 +1,5 @@
-var Path = require('path');
-var Hapi = require('hapi');
+var Path = require('path'); // contains utilities for handling and transforming file paths
+var Hapi = require('hapi'); // framework for building applications and services
 var server = new Hapi.Server();
 
 // configuring the server address
@@ -16,11 +16,12 @@ server.connection({
 
 // plugins that needs to be registered
 var plugins = [
-  { register: require('vision')},
-  { register: require('inert')},
+  { register: require('vision')},  // templates rendering support
+  { register: require('inert')},  // static file and directory handlers
   { register: require('./routes/static_pages.js')},
   { register: require('./routes/api/doughnuts.js')},
   { register: require('./routes/api/users.js')},
+  { register: require('./routes/api/sessions.js')},
   { register: require('hapi-mongodb'),
     options: {
       "url": process.env.MONGOLAB_URI || "mongodb://127.0.0.1:27017/hapi-doughnuts",
@@ -28,6 +29,15 @@ var plugins = [
         "db": {
           "native_parser": false
         }
+      }
+    }
+  },
+  {
+    register: require('yar'),
+    options: {
+      cookieOptions: {
+        password: process.env.COOKIE_PASSWORD || 'passwordpasswordpasswordpassword',
+        isSecure: false
       }
     }
   }

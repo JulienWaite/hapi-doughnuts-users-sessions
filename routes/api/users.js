@@ -1,5 +1,5 @@
-var Joi = require('joi'); // What does Joi do? Object schema validation
-var Bcrypt = require('bcrypt'); // What is Bcrypt? Encryption / Hashing function
+var Joi = require('joi'); // Object schema validation
+var Bcrypt = require('bcrypt'); // Encryption / Hashing function
 
 exports.register = function(server, options, next) {
 
@@ -13,9 +13,10 @@ exports.register = function(server, options, next) {
         var db = request.server.plugins['hapi-mongodb'].db;
 
         db.collection('users').find().toArray(function(err, users) {
-          if (err) { return reply('Internal MongoDB error', err); }
-
-          reply(users);
+          if (err) {
+            return reply('Internal MongoDB error', err).code(400);
+          }
+          reply(users).code(200);
         });
       }
     },
@@ -35,7 +36,7 @@ exports.register = function(server, options, next) {
 
           db.collection('users').findOne(uniqUserQuery, function(err, userExist){
             if (userExist) {
-              return reply('Error: Username/Email already exists', err);
+              return reply('Error: Username/Email already exists', err).code(400);
             }
 
             // Now, add the new user into the database
@@ -45,9 +46,10 @@ exports.register = function(server, options, next) {
 
                 // Store hash in your password DB.
                 db.collection('users').insert(user, function(err, doc) {
-                  if (err) { return reply('Internal MongoDB error', err); }
-
-                  reply(doc);
+                  if (err) {
+                    return reply('Internal MongoDB error', err).code(400);
+                  }
+                  reply(doc).code(200);
                 });
               });
             });
@@ -55,7 +57,7 @@ exports.register = function(server, options, next) {
         },
         validate: {
           payload: {
-            // Required, Limited to 20 chars
+            // Required, limited to 20 charaters
             username: Joi.string().max(20).required(),
             email:    Joi.string().email().max(50).required(),
             password: Joi.string().min(5).max(20).required(),
@@ -74,9 +76,10 @@ exports.register = function(server, options, next) {
         var db = request.server.plugins['hapi-mongodb'].db;
 
         db.collection('users').findOne({ "username": username }, function(err, user) {
-          if (err) { return reply('Internal MongoDB error', err); }
-
-          reply(user);
+          if (err) {
+            return reply('Internal MongoDB error', err).code(400);
+          }
+          reply(user).code(200);
         })
       }
     }

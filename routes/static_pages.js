@@ -1,4 +1,6 @@
-exports.register = function (server, options, next) {
+var Auth = require('./api/auth');
+
+  exports.register = function (server, options, next) {
   // serving static files
   server.route([
     {
@@ -11,11 +13,17 @@ exports.register = function (server, options, next) {
       }
     },
     {
-      // Retrieve all users
+      // Login page
       method: 'GET',
       path: '/',
       handler: function(request, reply) {
-        reply.view('index');
+        Auth.authenticated(request, function (result) {
+          if (result.authenticated) {
+            reply.redirect('/doughnuts').code(307);
+          } else {
+            reply.view('index', {message: request.query.message}).code(200);
+          }
+        });
       }
     },
     {
@@ -23,7 +31,13 @@ exports.register = function (server, options, next) {
       method: 'GET',
       path: '/doughnuts',
       handler: function(request, reply) {
-        reply.view('doughnuts');
+        Auth.authenticated(request, function (result) {
+          if (result.authenticated) {
+            reply.view('doughnuts').code(200);
+          } else {
+            reply.redirect('/?message=Please sign in first').code(307);
+          }
+        });
       }
     }
   ]);

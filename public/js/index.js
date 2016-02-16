@@ -15,7 +15,7 @@ $(document).ready(function () {
     // do validation here for the front end. (Bootstrap, HTML & JS)
 
     $.ajax({
-      type: "POST",
+      method: "POST",  // method was previously type but changed for consistency
       url: '/api/users',
       data: user,
       success: function (response) {
@@ -31,5 +31,34 @@ $(document).ready(function () {
 
   $('#signin').on('submit', function (e) {
     e.preventDefault();
+
+    var user = {
+      username: $('#signin [name="username"]').val(),
+      password: $('#signin [name="password"]').val()
+    };
+
+    $.ajax({
+      method: "POST",
+      url: "/api/sessions",
+      data: user,
+      dataType: 'JSON',
+      success: function(response){
+        window.location.href = "/doughnuts";
+        //console.log("create session / logged in", response);
+      },
+      error: function (response) {
+        console.log(response);
+      }
+    });
   });
+
+  // $.ajax({
+  //   method: "GET",
+  //   url: "/api/authenticated",
+  //   success: function(response){
+  //     if (response.authenticated) {
+  //       window.location.href = "/doughnuts";
+  //     }
+  //   }
+  // });
 });

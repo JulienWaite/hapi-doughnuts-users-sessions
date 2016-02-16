@@ -13,13 +13,12 @@ $(document).ready(function () {
     $('#doughnuts').append(newLi);
   };
 
-  // Main
   var deleteDonut = function (elem) {
     var id = $(elem).parent().data("id");
 
     $.ajax({
-      url: "http://0.0.0.0:8000/api/doughnuts/" + id,
       method: "DELETE",
+      url: "/api/doughnuts/" + id, // url previously "http://0.0.0.0:8000/api/doughnuts/"
       success: function (response, status) {
         console.log(response);
         $(elem).parent().remove();
@@ -29,7 +28,7 @@ $(document).ready(function () {
       }
     });
   };
-  //
+
   var bindButtons = function () {
     $('.edit').off().on("click", function (e) {
       e.preventDefault();
@@ -52,8 +51,8 @@ $(document).ready(function () {
 
   var getAllDonuts = function () {
     $.ajax({
-      url: "http://0.0.0.0:8000/api/doughnuts",
       method: "GET",
+      url: "/api/doughnuts",
       success: function (response, status) {
         response.forEach(function (elem) {
           createNewLi(elem._id, elem.flavor, elem.style);
@@ -74,8 +73,8 @@ $(document).ready(function () {
       var style = $('#new-doughnut-style').val();
 
       $.ajax({
-        url: "http://0.0.0.0:8000/api/doughnuts",
         method: "POST",
+        url: "/api/doughnuts",
         data: {
           flavor: flavor,
           style: style
@@ -100,8 +99,8 @@ $(document).ready(function () {
       var style = $('#edit-doughnut-style').val();
 
       $.ajax({
-        url: "http://0.0.0.0:8000/api/doughnuts/" + id,
         method: "PUT",
+        url: "/api/doughnuts/" + id,
         data: {
           flavor: flavor,
           style: style
@@ -120,10 +119,24 @@ $(document).ready(function () {
     });
   };
 
+  var bindSignout = function () {
+    $('#signout').on('click', function (e) {
+      $.ajax({
+        method: "DELETE",
+        url: '/api/sessions',
+        success: function (response) {
+          //console.log(response);
+          window.location.href = "/";
+        }
+      });
+    });
+  };
+
   var init = function () {
     getAllDonuts();
     bindCreateButton();
     bindUpdateDonut();
+    bindSignout();
   };
 
   init();
